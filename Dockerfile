@@ -1,11 +1,4 @@
-# Use an efficient base image
-FROM openjdk:21-alpine
-# Set working directory
+FROM openjdk:21-jre-alpine
 WORKDIR /app
-
-# Copy build artifacts (important order)
-COPY build/libs/*.jar app.jar
-
-
-# Command to run the Spring Boot application
+COPY --from=build build/libs/*.jar app.jar
 ENTRYPOINT ["java","-jar","app.jar"]
