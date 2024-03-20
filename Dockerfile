@@ -1,4 +1,8 @@
-FROM openjdk-21
-WORKDIR /app
-COPY --from=build build/libs/*.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+FROM openjdk:19-jdk
+
+#COPY target/VCR-0.0.1-SNAPSHOT.jar .
+
+COPY  /build/libs/telegram-bot-0.0.1-SNAPSHOT.jar .
+
+
+CMD ["java", "-jar", "telegram-bot-0.0.1-SNAPSHOT.jar"]
