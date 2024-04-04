@@ -23,17 +23,29 @@ import java.net.http.HttpResponse;
 public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private PhotoRepository repository;
-    @Autowired
-    private TranslationService translationService;
     @Override
     public void onUpdateReceived(Update update) {
         String chatId = update.getMessage().getChatId().toString();
         String cmd = update.getMessage().getText();
         var p = repository.findByCmd(cmd);
+
         if (p!=null){
             sendImageFromUrl(chatId, p.getImageUrl());
-        } else if (cmd.equals("/pickLine")) {
-            HttpClient client = HttpClient.newHttpClient();
+        } else if (cmd.split(" ")[0].equals("/ig")) {
+            String text = cmd.split(" ")[1];
+            //System.err.println(text.split(" ")[1]);
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://instagram-scraper-2022.p.rapidapi.com/ig/info_username/?user=" + text)).header("X-RapidAPI-Key", "d591e196edmsh71734c4c0f2880ep1b244fjsn3fe5431155dd").header("X-RapidAPI-Host", "instagram-scraper-2022.p.rapidapi.com").method("GET", HttpRequest.BodyPublishers.noBody()).build();
+            HttpResponse<String> response = null;
+            try {
+                response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            // System.out.println(response.body());
+           /* HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://rizzapi.vercel.app/random")).build();
             HttpResponse<String> response = null;
             try {
@@ -42,17 +54,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                 throw new RuntimeException(e);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
             Gson gson = new Gson();
-            PickUpLineResponse res = gson.fromJson(response.body(), PickUpLineResponse.class);
-            SendMessage message=new SendMessage();
-            String x=translationService.translateText(res.getText(),"kh");
-            System.err.println(x);
-           /* message.setText(res.getText());
-            message.setChatId(chatId);*/
+            IGResponse res = gson.fromJson(response.body(), IGResponse.class);
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
 
+                sendMessage.setText(res.getUser().getHd_profile_pic_url_info().getUrl());
+           /* } else {
+                sendMessage.setText("I can not find this username: " + text + " IG for you");
+
+            }*/
             try {
-                execute(message);
+                execute(sendMessage);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }
