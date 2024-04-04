@@ -1,5 +1,6 @@
 package com.somnang.telegrambot;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -12,13 +13,18 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private PhotoRepository repository;
-
+    @Autowired
+    private TranslationService translationService;
     @Override
     public void onUpdateReceived(Update update) {
         String chatId = update.getMessage().getChatId().toString();
@@ -26,10 +32,24 @@ public class TelegramBot extends TelegramLongPollingBot {
         var p = repository.findByCmd(cmd);
         if (p!=null){
             sendImageFromUrl(chatId, p.getImageUrl());
-        }else if(cmd.equals("/confess")){
+        } else if (cmd.equals("/pickLine")) {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://rizzapi.vercel.app/random")).build();
+            HttpResponse<String> response = null;
+            try {
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            Gson gson = new Gson();
+            PickUpLineResponse res = gson.fromJson(response.body(), PickUpLineResponse.class);
             SendMessage message=new SendMessage();
-            message.setText("Do it now!!");
-            message.setChatId(chatId);
+            String x=translationService.translateText(res.getText(),"kh");
+            System.err.println(x);
+           /* message.setText(res.getText());
+            message.setChatId(chatId);*/
 
             try {
                 execute(message);
