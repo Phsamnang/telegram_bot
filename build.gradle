@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     // https://mvnrepository.com/artifact/org.telegram/telegrambots
@@ -45,11 +45,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-web')
     implementation("com.google.code.gson:gson:2.10.1")
     implementation 'com.google.cloud:google-cloud-translate:2.38.0'
     // https://mvnrepository.com/artifact/com.google.cloud/google-cloud
     implementation 'com.google.cloud:google-cloud:0.47.0-alpha'
+
+
 
 
 
