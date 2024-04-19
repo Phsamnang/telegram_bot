@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class GeminiService {
 
-    private String geminiApiKey = "AIzaSyDNNd1nb36Sm5cRHypwS6iASs79I9T9cWE";
+    //private String geminiApiKey = "AIzaSyDNNd1nb36Sm5cRHypwS6iASs79I9T9cWE";
 
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBt6GK0o-DfQ4ulZxe8FzG_dYU7oaYY3wE";
 
